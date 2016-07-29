@@ -6,13 +6,11 @@ default_platform :ios
   end
 
   lane :test do
-    setup()
-    scan
+    setup_and_run_tests()
   end
 
   lane :hockey do
-    setup()
-    scan
+    setup_and_run_tests()
     deploy_hockey()
   end
 
@@ -20,16 +18,32 @@ default_platform :ios
     setup()
     deploy_hockey()
   end
+ 
+  def setup_and_run_tests()
+    setup()
+    scan
+  end
 
   def deploy_hockey()
     icon_overlay(version: get_version_number)
     set_build_number()
     update_info_plist
-    gym(use_legacy_build_api: true)
+    build_with_gym()
+    upload_to_hockeyapp()
+  end
+
+  def build_with_gym()
+    if ENV['TAB_USE_LEGACY_BUILD_API']
+      gym(use_legacy_build_api: true)
+    else
+      gym
+    end
+  end
+
+  def upload_to_hockeyapp()
     custom_notes = ENV['CUSTOM_HOCKEY_RELEASE_NOTES'] || ""
     notes = custom_notes == "" ? create_change_log() : custom_notes
     hockey(notes_type: "0", notes: notes)
-
   end
 
   def setup()
@@ -43,14 +57,15 @@ default_platform :ios
   end
 
   def set_build_number()
-    build_number = "0"
     use_timestamp = ENV['TAB_USE_TIME_FOR_BUILD_NUMBER'] || false
+    use_ci_build_number = ENV['TAB_CI_BUILD_NUMBER'] || false
     if use_timestamp
-      build_number = Time.now.strftime("%y%m%d%H%M")
+      increment_build_number(build_number: Time.now.strftime("%y%m%d%H%M"))
+    elsif use_ci_build_number
+      increment_build_number(build_number: ENV['BUILD_NUMBER'])
     else
-      build_number = ENV['BUILD_NUMBER']
+      increment_build_number()
     end
-    increment_build_number(build_number: build_number)
   end
 
   def create_change_log()
