@@ -18,7 +18,17 @@ default_platform :ios
     setup()
     deploy_hockey()
   end
- 
+  
+  lane :deploy_itc do
+    setup()
+    gym
+    deliver(
+      app: ENV['TAB_APPLE_APP_ID'],
+      app_identifier: ENV['FL_UPDATE_PLIST_APP_IDENTIFIER'],
+      force: true
+    )
+  end
+
   def setup_and_run_tests()
     setup()
     scan
