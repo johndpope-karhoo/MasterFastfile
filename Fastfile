@@ -1,8 +1,10 @@
-fastlane_version "1.55.0"
+fastlane_version "1.99.0"
 
 default_platform :ios
 
   before_all do
+     ENV["SLACK_URL"] = SLACK_URL
+     ENV["SCAN_SLACK_CHANNEL"] = SCAN_SLACK_CHANNEL
   end
 
   lane :test do
@@ -60,7 +62,17 @@ default_platform :ios
   end
 
   after_all do |lane|
+    # This block is called, only if the executed lane was successful    
+    slack(
+      message: "Fastlane operation completed!!",
+      channel: slack_default_channel
+    )
   end
 
   error do |lane, exception|
+    slack(
+      message: exception.message,
+      success: false,
+      channel: slack_default_channel
+    )
   end

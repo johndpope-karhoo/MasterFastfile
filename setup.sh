@@ -4,12 +4,13 @@ mkdir fastlane
 cd fastlane
 echo "app_identifier = ENV['FL_UPDATE_PLIST_APP_IDENTIFIER']" > Appfile
 echo "fastlane_version \"1.55.0\"
-import_from_git(url: 'https://github.com/theappbusiness/MasterFastfile.git', path: 'Fastfile')" > Fastfile
+import_from_git(url: 'https://github.com/johndpope-karhoo/MasterFastfile', path: 'Fastfile')" > Fastfile
 
 function make_default_env_file {
   cat > .env.default <<EOF
 #This is your default environment file
 #Set environment variables used in all builds here
+
 #More information on available environment variables can be found here https://github.com/theappbusiness/MasterFastfile/wiki/Quick-simple-setup-using-TAB-defaults
 FL_HOCKEY_API_TOKEN="" #Hocky API Token
 FL_HOCKEY_OWNER_ID="" #Hockey Organisation ID (number not name)
@@ -19,6 +20,8 @@ FL_HOCKEY_TEAMS="" #Hockey ID (number not name)
 FL_HOCKEY_NOTIFY= #Email team when new build avialable? 0 = No, 1 = Yes
 ICON_OVERLAY_ASSETS_BUNDLE="" #Path to .xcassets
 TAB_USE_TIME_FOR_BUILD_NUMBER= #Use Time and date for build number or BUILD_NUMBER environment variable (created by jenkis or team city) true = use time, false = use BUILD_NUMBER
+SLACK_URL=#  https://karhoo.slack.com/apps/manage/custom-integrations
+SCAN_SLACK_CHANNEL= # 
 EOF
 }
 
